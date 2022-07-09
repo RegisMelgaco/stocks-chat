@@ -1,4 +1,4 @@
-package room
+package repository
 
 import (
 	"local/stocks-chat/pkg/domain/entity"
@@ -10,6 +10,6 @@ type repo struct {
 	pool *pgxpool.Pool
 }
 
-func NewRepository(pool *pgxpool.Pool) entity.RoomRepository {
+func NewRepository(pool *pgxpool.Pool) entity.Repository {
 	return repo{pool}
 }

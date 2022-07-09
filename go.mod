@@ -1,11 +1,12 @@
 module local/stocks-chat
 
-go 1.17
+go 1.18
 
 require (
 	github.com/go-chi/chi/v5 v5.0.7
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/google/uuid v1.3.0
+	github.com/gorilla/websocket v1.5.0
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/joho/godotenv v1.4.0
 	github.com/ory/dockertest/v3 v3.9.1

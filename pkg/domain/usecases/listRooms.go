@@ -7,9 +7,9 @@ import (
 )
 
 func (u usecases) ListRooms(ctx context.Context) ([]entity.Room, error) {
-	dErr := erring.New("Usecases.ListRooms")
+	dErr := erring.NewWrapper("Usecases.ListRooms")
 
-	list, err := u.roomRepo.List(ctx)
+	list, err := u.repo.ListRooms(ctx)
 	if err != nil {
 		return nil, dErr.Wrap(err).Err()
 	}

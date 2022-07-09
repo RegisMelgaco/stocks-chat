@@ -1,4 +1,4 @@
-package room
+package repository
 
 import (
 	"context"
@@ -35,7 +35,7 @@ func Test_Repository_Room_List(t *testing.T) {
 		)
 		require.NoError(t, err)
 
-		actual, err := repo.List(context.Background())
+		actual, err := repo.ListRooms(context.Background())
 
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)

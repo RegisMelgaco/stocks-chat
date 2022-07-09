@@ -7,16 +7,21 @@ import (
 )
 
 type DomainErr struct {
-	calle  string
-	fields map[string]interface{}
-	msg    string
-	err    error
+	calle       string
+	fields      map[string]interface{}
+	name        string
+	description string
+	err         error
 }
 
 func (e DomainErr) Error() string {
 	acc := "{"
-	if e.msg != "" {
-		acc += fmt.Sprintf("\n msg: %s", e.msg)
+	if e.name != "" {
+		acc += fmt.Sprintf("\n name: %s", e.name)
+	}
+
+	if e.description != "" {
+		acc += fmt.Sprintf("\n description: %s", e.description)
 	}
 
 	if e.calle != "" {
@@ -35,8 +40,8 @@ func (e DomainErr) Unwrap() error {
 }
 
 func (e DomainErr) Is(target error) bool {
-	if targetAsDomain, ok := target.(DomainErr); ok {
-		return targetAsDomain.msg == e.msg
+	if targetAsDomain, ok := target.(DomainErr); ok && targetAsDomain.name == e.name {
+		return true
 	}
 
 	if e.err != nil {
@@ -46,17 +51,32 @@ func (e DomainErr) Is(target error) bool {
 	return false
 }
 
-func New(calle string) *DomainErr {
+func NewWrapper(calle string) *DomainErr {
 	return &DomainErr{calle: calle}
 }
 
-func (e *DomainErr) Field(key string, value interface{}) *DomainErr {
+func NewErr(name, description string) DomainErr {
+	return DomainErr{
+		name:        strings.ReplaceAll(strings.ToLower(name), " ", "_"),
+		description: description,
+	}
+}
+
+func (e DomainErr) Field(key string, value interface{}) DomainErr {
+	if e.fields == nil {
+		e.fields = map[string]interface{}{}
+	}
+
 	e.fields[key] = value
 
 	return e
 }
 
-func (e *DomainErr) Fields(fields map[string]interface{}) *DomainErr {
+func (e DomainErr) Fields(fields map[string]interface{}) DomainErr {
+	if e.fields == nil {
+		e.fields = map[string]interface{}{}
+	}
+
 	for k, v := range fields {
 		e.fields[k] = v
 	}
@@ -64,14 +84,61 @@ func (e *DomainErr) Fields(fields map[string]interface{}) *DomainErr {
 	return e
 }
 
-func (e *DomainErr) Wrap(err error) *DomainErr {
+func (e DomainErr) Wrap(err error) DomainErr {
 	e.err = err
 
 	return e
 }
 
-func (e *DomainErr) Err(msg ...string) error {
-	e.msg = strings.Join(msg, ", ")
+func (e DomainErr) NameAndDescribe() (name, description string) {
+	if e.name != "" && e.description != "" {
+		return e.name, e.description
+	}
 
+	var dErr DomainErr
+	if ok := errors.As(e.err, &dErr); ok {
+		return dErr.NameAndDescribe()
+	}
+
+	return "internal server error", "the server has encountered a situation it does not know how to handle."
+}
+
+func (e DomainErr) Calls() string {
+	acc := e.calle
+
+	var dErr DomainErr
+	if ok := errors.As(e.err, &dErr); ok && dErr.calle != "" {
+		acc = fmt.Sprintf("%s > %s", acc, dErr.calle)
+	}
+
+	return acc
+}
+
+func (e DomainErr) GetFields() map[string]interface{} {
+	var dErr DomainErr
+	ok := errors.As(e.err, &dErr)
+	if !ok {
+		return e.fields
+	}
+
+	acc := dErr.GetFields()
+	for k, v := range e.fields {
+		acc[k] = v
+	}
+
+	return acc
+}
+
+func (e DomainErr) InternalErr() error {
+	err := e.err
+	var dErr DomainErr
+	for err != nil && errors.As(err, &dErr) {
+		err = dErr.err
+	}
+
+	return err
+}
+
+func (e DomainErr) Err() error {
 	return e
 }

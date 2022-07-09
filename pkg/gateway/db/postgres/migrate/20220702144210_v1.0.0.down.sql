@@ -1,3 +1,4 @@
 BEGIN;
 	DROP TABLE room;
+	DROP TABLE message;
 COMMIT;

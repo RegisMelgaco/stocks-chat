@@ -19,12 +19,13 @@ func Test_DomainErr_Err(t *testing.T) {
 		{
 			name: "when with value return with full error message",
 			err: DomainErr{
-				msg:    "msg",
-				err:    errors.New("external error"),
-				fields: map[string]interface{}{"value": 123},
-				calle:  "func1",
+				name:        "error 1",
+				description: "a fake error for tests",
+				err:         errors.New("external error"),
+				fields:      map[string]interface{}{"value": 123},
+				calle:       "func1",
 			},
-			expected: "{\n msg: msg\n  calle: func1\n err: external error\n}",
+			expected: "{\n name: error 1\n description: a fake error for tests\n  calle: func1\n err: external error\n}",
 		},
 		{
 			name:     "when with no value return with nils",
@@ -58,15 +59,15 @@ func Test_DomainErr_Is(t *testing.T) {
 	}
 	tests := []test{
 		{
-			name:     "when errors are domain errors and has diffrent msg return false",
-			err:      DomainErr{msg: "123"},
-			target:   DomainErr{msg: "456"},
+			name:     "when errors are domain errors and has diffrent name return false",
+			err:      DomainErr{name: "123"},
+			target:   DomainErr{name: "456"},
 			expected: false,
 		},
 		{
-			name:     "when errors are domain errors and has same msg return true",
-			err:      DomainErr{msg: "123"},
-			target:   DomainErr{msg: "123"},
+			name:     "when errors are domain errors and has same name return true",
+			err:      DomainErr{name: "123"},
+			target:   DomainErr{name: "123"},
 			expected: true,
 		},
 		{

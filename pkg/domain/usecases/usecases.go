@@ -3,9 +3,10 @@ package usecases
 import "local/stocks-chat/pkg/domain/entity"
 
 type usecases struct {
-	roomRepo entity.RoomRepository
+	repo      entity.Repository
+	messenger entity.Messenger
 }
 
-func New(roomRepo entity.RoomRepository) entity.Usecases {
-	return usecases{roomRepo}
+func New(repo entity.Repository, messenger entity.Messenger) entity.Usecases {
+	return usecases{repo, messenger}
 }

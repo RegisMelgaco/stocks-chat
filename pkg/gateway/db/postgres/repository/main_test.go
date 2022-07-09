@@ -1,4 +1,4 @@
-package room
+package repository
 
 import (
 	"local/stocks-chat/pkg/gateway/db/postgres"

@@ -1,4 +1,4 @@
-package room
+package repository
 
 import (
 	"context"
@@ -6,10 +6,10 @@ import (
 	"local/stocks-chat/pkg/domain/erring"
 )
 
-func (r repo) List(ctx context.Context) ([]entity.Room, error) {
-	dErr := erring.New("Repository.Room.List")
+func (r repo) ListRooms(ctx context.Context) ([]entity.Room, error) {
+	dErr := erring.NewWrapper("Repository.Room.List")
 
-	rows, err := r.pool.Query(ctx, "SELECT id, external_id, name FROM room;")
+	rows, err := r.pool.Query(ctx, "SELECT id, external_id, name FROM room")
 	if err != nil {
 		return nil, dErr.Wrap(err).Err()
 	}
